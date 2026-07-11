@@ -91,7 +91,7 @@ export default function Dashboard() {
           <div className="card">
             <h2 className="mb-4 font-bold">{t('dashboard.sevenDay')}</h2>
             <WeatherChart daily={forecast.daily} />
-            <p className="mt-3 text-right text-xs text-ink-400">
+            <p className="mt-3 text-right text-xs text-ink-500 dark:text-ink-400">
               Open-Meteo · fetched {new Date(forecast.fetchedAt).toLocaleTimeString()}
             </p>
           </div>

@@ -20,7 +20,7 @@ export default function ChecklistItem({ id, title, detail, checked, onToggle }) 
       />
       <span>
         <span
-          className={`block text-sm font-medium ${checked ? 'text-ink-400 line-through dark:text-ink-500' : 'text-ink-900 dark:text-ink-100'}`}
+          className={`block text-sm font-medium ${checked ? 'text-ink-500 line-through dark:text-ink-500' : 'text-ink-900 dark:text-ink-100'}`}
         >
           {title}
         </span>

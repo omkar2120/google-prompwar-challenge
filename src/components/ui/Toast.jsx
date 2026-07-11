@@ -32,7 +32,7 @@ export function toast(message, type = 'info') {
 
 const TYPE_STYLES = {
   info: 'bg-ink-900 text-white dark:bg-ink-100 dark:text-ink-900',
-  success: 'bg-emerald-600 text-white',
+  success: 'bg-emerald-700 text-white',
   alert: 'bg-red-600 text-white ring-1 ring-red-400/50',
 };
 
@@ -50,7 +50,11 @@ function ToastItem({ id, message, type, dismiss }) {
       className={`pointer-events-auto flex animate-fade-in items-start gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-lg ${TYPE_STYLES[type] || TYPE_STYLES.info}`}
     >
       <span className="flex-1">{text}</span>
-      <button onClick={() => dismiss(id)} aria-label="Dismiss" className="opacity-70 hover:opacity-100">
+      <button
+        onClick={() => dismiss(id)}
+        aria-label="Dismiss"
+        className="-my-1 -mr-1.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-70 hover:opacity-100"
+      >
         ✕
       </button>
     </div>
@@ -69,7 +73,7 @@ export default function ToastViewport() {
   const toasts = useToastStore((s) => s.toasts);
   const dismiss = useToastStore((s) => s.dismiss);
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-20 z-[1000] mx-auto flex max-w-sm flex-col gap-2 px-4 sm:bottom-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-[1000] mx-auto flex max-w-sm flex-col gap-2 pl-4 pr-20 md:bottom-6 md:pr-4">
       {toasts.map((t) => (
         <ToastItem key={t.id} {...t} dismiss={dismiss} />
       ))}

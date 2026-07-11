@@ -1,6 +1,8 @@
 // Single source of truth for all weather + geocoding network calls.
 // Open-Meteo is 100% free and requires no API key.
 
+import { capText, INPUT_LIMITS } from './validation.js';
+
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
 const GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
 const REVERSE_URL = 'https://nominatim.openstreetmap.org/reverse';
@@ -58,9 +60,10 @@ export async function fetchForecast(latitude, longitude, signal) {
  * @returns {Promise<import('../types/index.js').GeoLocation[]>}
  */
 export async function geocodeCity(name, signal) {
-  if (!name || name.trim().length < 2) return [];
+  const query = capText(name, INPUT_LIMITS.CITY_SEARCH);
+  if (query.length < 2) return [];
   const params = new URLSearchParams({
-    name: name.trim(),
+    name: query,
     count: '5',
     language: 'en',
     format: 'json',
@@ -134,35 +137,65 @@ export function getCurrentPosition() {
 }
 
 /**
- * Compute a deterministic severity assessment from a forecast (day 0).
+ * Extract the day-0 headline metrics used for severity scoring, tolerating
+ * missing/empty API arrays (returns zeroes rather than throwing).
+ * @param {Omit<import('../types/index.js').ForecastData,'location'>} forecast
+ * @returns {{maxPrecip:number, maxProb:number, maxGust:number}}
+ */
+export function extractDayZeroMetrics(forecast) {
+  const daily = forecast?.daily || {};
+  const hourly = forecast?.hourly || {};
+  return {
+    maxPrecip: daily.precipitation_sum?.[0] ?? 0,
+    maxProb: daily.precipitation_probability_max?.[0] ?? 0,
+    maxGust: Math.max(0, ...(hourly.windgusts_10m?.slice(0, 24) || [0])),
+  };
+}
+
+/**
+ * Classify rainfall against IMD thresholds (pure, no side effects).
+ * @param {number} maxPrecip  Day-0 precipitation sum (mm).
+ * @returns {{level: import('../types/index.js').RiskLevel, label:string, trigger:string|null}}
+ */
+export function classifyRain(maxPrecip) {
+  if (maxPrecip > THRESHOLDS.EXTREMELY_HEAVY_MM) {
+    return {
+      level: 'severe',
+      label: 'Extremely Heavy Rain (IMD)',
+      trigger: `Rain sum ${maxPrecip}mm exceeds extremely-heavy threshold (204.5mm)`,
+    };
+  }
+  if (maxPrecip > THRESHOLDS.VERY_HEAVY_MM) {
+    return {
+      level: 'high',
+      label: 'Very Heavy Rain (IMD)',
+      trigger: `Rain sum ${maxPrecip}mm exceeds very-heavy threshold (115.5mm)`,
+    };
+  }
+  if (maxPrecip > THRESHOLDS.HEAVY_RAIN_MM) {
+    return {
+      level: 'moderate',
+      label: 'Heavy Rain (IMD)',
+      trigger: `Rain sum ${maxPrecip}mm exceeds heavy threshold (64.5mm)`,
+    };
+  }
+  return { level: 'low', label: 'Normal conditions', trigger: null };
+}
+
+/**
+ * Compute a deterministic severity assessment from a forecast (day 0). Rain
+ * severity dominates; a high rain-probability or storm-force gust can escalate
+ * an otherwise-calm day to a watch. The AI never decides severity — only phrases
+ * the resulting alert.
  * @param {Omit<import('../types/index.js').ForecastData,'location'>} forecast
  * @returns {{level: import('../types/index.js').RiskLevel, label:string, triggers:string[], maxPrecip:number, maxProb:number, maxGust:number}}
  */
 export function assessSeverity(forecast) {
-  const daily = forecast.daily || {};
-  const hourly = forecast.hourly || {};
-  const maxPrecip = daily.precipitation_sum?.[0] ?? 0;
-  const maxProb = daily.precipitation_probability_max?.[0] ?? 0;
-  const maxGust = Math.max(0, ...(hourly.windgusts_10m?.slice(0, 24) || [0]));
+  const { maxPrecip, maxProb, maxGust } = extractDayZeroMetrics(forecast);
 
-  const triggers = [];
-  /** @type {import('../types/index.js').RiskLevel} */
-  let level = 'low';
-  let label = 'Normal conditions';
-
-  if (maxPrecip > THRESHOLDS.EXTREMELY_HEAVY_MM) {
-    level = 'severe';
-    label = 'Extremely Heavy Rain (IMD)';
-    triggers.push(`Rain sum ${maxPrecip}mm exceeds extremely-heavy threshold (204.5mm)`);
-  } else if (maxPrecip > THRESHOLDS.VERY_HEAVY_MM) {
-    level = 'high';
-    label = 'Very Heavy Rain (IMD)';
-    triggers.push(`Rain sum ${maxPrecip}mm exceeds very-heavy threshold (115.5mm)`);
-  } else if (maxPrecip > THRESHOLDS.HEAVY_RAIN_MM) {
-    level = 'moderate';
-    label = 'Heavy Rain (IMD)';
-    triggers.push(`Rain sum ${maxPrecip}mm exceeds heavy threshold (64.5mm)`);
-  }
+  const rain = classifyRain(maxPrecip);
+  let { level, label } = rain;
+  const triggers = rain.trigger ? [rain.trigger] : [];
 
   if (maxProb > THRESHOLDS.PROBABILITY_WATCH && level === 'low') {
     level = 'moderate';

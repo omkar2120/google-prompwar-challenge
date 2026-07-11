@@ -52,7 +52,7 @@ export default function VoiceRecorderButton({ onTranscribed, language, onTranscr
       disabled={busy}
       aria-label={isRecording ? t('chat.recording') : t('chat.recordHint')}
       title={error ? t('errors.micDenied') : t('chat.recordHint')}
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
         isRecording
           ? 'animate-pulse bg-red-600 text-white'
           : 'bg-ink-100 text-ink-600 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-300'

@@ -14,7 +14,7 @@ function Bubble({ role, content }) {
       <div
         className={`max-w-[85%] whitespace-pre-line rounded-2xl px-3.5 py-2 text-sm ${
           isUser
-            ? 'rounded-br-sm bg-brand-600 text-white'
+            ? 'rounded-br-sm bg-brand-700 text-white'
             : 'rounded-bl-sm bg-ink-100 text-ink-800 dark:bg-ink-800 dark:text-ink-100'
         }`}
       >
@@ -64,13 +64,13 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={t('chat.title')}
-        className="btn-primary fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full !p-0 text-2xl shadow-glow-brand animate-glow lg:bottom-6"
+        className="btn-primary fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full !p-0 text-2xl shadow-glow-brand animate-glow md:bottom-6"
       >
         {open ? '✕' : '💬'}
       </button>
 
       {open && (
-        <div className="glass fixed bottom-40 right-4 z-50 flex h-[70vh] max-h-[560px] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-2xl border shadow-glass lg:bottom-24">
+        <div className="glass fixed bottom-40 right-4 z-50 flex h-[70vh] max-h-[560px] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-2xl border shadow-glass md:bottom-24">
           <div className="flex items-center gap-2 border-b border-white/10 bg-brand-gradient px-4 py-3 text-white">
             <span className="text-lg">🛟</span>
             <div>
@@ -96,7 +96,7 @@ export default function ChatWidget() {
               </div>
             )}
             {transcribing && (
-              <p className="text-center text-xs text-ink-400">{t('chat.transcribing')}</p>
+              <p className="text-center text-xs text-ink-500 dark:text-ink-400">{t('chat.transcribing')}</p>
             )}
             {error && <p className="text-center text-xs text-red-500">{error}</p>}
           </div>
@@ -118,7 +118,7 @@ export default function ChatWidget() {
             <button
               type="submit"
               disabled={isSending || !input.trim()}
-              className="btn-primary h-10 w-10 !p-0"
+              className="btn-primary h-11 w-11 !p-0"
               aria-label={t('chat.send')}
             >
               ➤

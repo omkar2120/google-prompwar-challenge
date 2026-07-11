@@ -102,7 +102,7 @@ export default function ReportForm({ pinnedLatLng, onSubmit, onUseLocation }) {
       </div>
 
       {pinnedLatLng ? (
-        <p className="text-xs text-ink-400">
+        <p className="text-xs text-ink-500 dark:text-ink-400">
           Pin: {pinnedLatLng.lat.toFixed(4)}, {pinnedLatLng.lng.toFixed(4)}
         </p>
       ) : (

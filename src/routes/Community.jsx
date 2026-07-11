@@ -79,7 +79,7 @@ export default function Community() {
         <div className="lg:col-span-2">
           <HazardMap reports={reports} center={center} pinned={pinned} onPick={setPinned} />
           {reports.length === 0 && !loading && (
-            <p className="mt-2 text-center text-sm text-ink-400">{t('community.noReports')}</p>
+            <p className="mt-2 text-center text-sm text-ink-500 dark:text-ink-400">{t('community.noReports')}</p>
           )}
         </div>
         <div className="card">

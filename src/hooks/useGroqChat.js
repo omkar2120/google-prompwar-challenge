@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { chatCompletion, MODELS } from '../lib/groqClient.js';
+import { validateChatMessage } from '../lib/validation.js';
 
 /**
  * Generic non-streaming chat hook that keeps conversation context.
@@ -18,8 +19,8 @@ export function useGroqChat({ systemPrompt, model = MODELS.REASONING, historyTur
   const send = useCallback(
     /** @param {string} text */
     async (text) => {
-      const content = (text || '').trim();
-      if (!content || isSending) return;
+      const { ok, value: content } = validateChatMessage(text);
+      if (!ok || isSending) return;
 
       setError(null);
       const userMsg = { role: 'user', content };

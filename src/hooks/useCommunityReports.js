@@ -9,6 +9,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../lib/firebase.js';
+import { validateReportNote } from '../lib/validation.js';
 
 const LOCAL_KEY = 'monsoonmitra_reports_local';
 const COLLECTION = 'hazard_reports';
@@ -70,16 +71,19 @@ export function useCommunityReports() {
   const addReport = useCallback(
     /** @param {Omit<import('../types/index.js').HazardReport,'id'|'createdAt'>} report */
     async (report) => {
+      // Enforce the note length cap at the data layer so both the shared
+      // (Firestore) and local paths store sanitized, bounded text.
+      const safeReport = { ...report, note: validateReportNote(report.note).value };
       if (isShared) {
         await addDoc(collection(db, COLLECTION), {
-          ...report,
+          ...safeReport,
           createdAt: serverTimestamp(),
         });
         return;
       }
       // Local-only fallback
       const next = [
-        { ...report, id: `${Date.now()}`, createdAt: Date.now() },
+        { ...safeReport, id: `${Date.now()}`, createdAt: Date.now() },
         ...loadLocal(),
       ].slice(0, 200);
       localStorage.setItem(LOCAL_KEY, JSON.stringify(next));

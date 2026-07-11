@@ -72,7 +72,7 @@ export default function Login() {
             {t('auth.google')}
           </button>
 
-          <div className="flex items-center gap-3 py-1 text-xs text-ink-400">
+          <div className="flex items-center gap-3 py-1 text-xs text-ink-500 dark:text-ink-400">
             <span className="h-px flex-1 bg-ink-200 dark:bg-white/10" />
             {t('auth.or')}
             <span className="h-px flex-1 bg-ink-200 dark:bg-white/10" />
@@ -81,7 +81,7 @@ export default function Login() {
           <Button variant="premium" onClick={guest} className="w-full py-3 text-base">
             {t('auth.guest')}
           </Button>
-          <p className="text-xs text-ink-400">{t('auth.guestHint')}</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400">{t('auth.guestHint')}</p>
         </div>
 
         {error && (
@@ -90,7 +90,7 @@ export default function Login() {
           </p>
         )}
         {!isFirebaseConfigured && !error && (
-          <p className="mt-4 rounded-xl bg-ink-500/5 p-3 text-xs text-ink-400 dark:bg-white/5">
+          <p className="mt-4 rounded-xl bg-ink-500/5 p-3 text-xs text-ink-500 dark:text-ink-400 dark:bg-white/5">
             {t('auth.needFirebase')}
           </p>
         )}

@@ -128,11 +128,11 @@ export default function Profile() {
         {profile ? (
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <dt className="text-ink-400">{t('profile.location')}</dt>
+              <dt className="text-ink-500 dark:text-ink-400">{t('profile.location')}</dt>
               <dd className="font-medium">{profile.location?.name || '—'}</dd>
             </div>
             <div>
-              <dt className="text-ink-400">{t('profile.home')}</dt>
+              <dt className="text-ink-500 dark:text-ink-400">{t('profile.home')}</dt>
               <dd className="font-medium">
                 {t(`onboarding.${profile.homeType}`)}
                 {profile.homeType === 'apartment' && profile.floorNumber != null
@@ -141,19 +141,19 @@ export default function Profile() {
               </dd>
             </div>
             <div>
-              <dt className="text-ink-400">{t('profile.members')}</dt>
+              <dt className="text-ink-500 dark:text-ink-400">{t('profile.members')}</dt>
               <dd className="font-medium">
                 {comp.adults}A · {comp.children}C · {comp.elderly}E
                 {comp.pets ? ` · ${comp.pets}🐾` : ''}
               </dd>
             </div>
             <div>
-              <dt className="text-ink-400">{t('profile.language')}</dt>
+              <dt className="text-ink-500 dark:text-ink-400">{t('profile.language')}</dt>
               <dd className="font-medium">{langLabel}</dd>
             </div>
             {profile.riskFactors?.length > 0 && (
               <div className="col-span-2">
-                <dt className="text-ink-400">{t('profile.riskFactors')}</dt>
+                <dt className="text-ink-500 dark:text-ink-400">{t('profile.riskFactors')}</dt>
                 <dd className="mt-1 flex flex-wrap gap-1.5">
                   {profile.riskFactors.map((r) => (
                     <span
@@ -179,14 +179,14 @@ export default function Profile() {
           {activity.length > 0 && (
             <button
               onClick={clearActivity}
-              className="text-xs font-medium text-ink-400 hover:text-ink-600 dark:hover:text-ink-200"
+              className="text-xs font-medium text-ink-500 dark:text-ink-400 hover:text-ink-600 dark:hover:text-ink-200"
             >
               {t('profile.clearHistory')}
             </button>
           )}
         </div>
         {activity.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-ink-200 p-4 text-center text-sm text-ink-400 dark:border-white/10">
+          <p className="rounded-xl border border-dashed border-ink-200 p-4 text-center text-sm text-ink-500 dark:text-ink-400 dark:border-white/10">
             {t('profile.noHistory')}
           </p>
         ) : (
@@ -200,7 +200,7 @@ export default function Profile() {
                 <span className="flex-1 text-sm font-medium">
                   {a.label || t(`activity.${a.type}`)}
                 </span>
-                <span className="text-xs text-ink-400">{timeAgo(a.at)}</span>
+                <span className="text-xs text-ink-500 dark:text-ink-400">{timeAgo(a.at)}</span>
               </li>
             ))}
           </ul>

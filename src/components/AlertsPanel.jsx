@@ -46,7 +46,7 @@ export default function AlertsPanel() {
             ✓ {t('alerts.enabled')}
           </span>
         ) : permission === 'denied' ? (
-          <span className="text-xs text-ink-400">{t('alerts.denied')}</span>
+          <span className="text-xs text-ink-500 dark:text-ink-400">{t('alerts.denied')}</span>
         ) : (
           <Button variant="secondary" onClick={enable} className="!py-1.5 text-xs">
             {t('alerts.enable')}
@@ -54,13 +54,13 @@ export default function AlertsPanel() {
         )}
       </div>
 
-      <p className="mb-3 text-xs text-ink-400">
+      <p className="mb-3 text-xs text-ink-500 dark:text-ink-400">
         {t('alerts.monitoring')}
         {lastCheckedAt ? ` · ${timeAgo(lastCheckedAt)}` : ''}
       </p>
 
       {alertHistory.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-ink-200 p-4 text-center text-sm text-ink-400 dark:border-ink-700">
+        <p className="rounded-xl border border-dashed border-ink-200 p-4 text-center text-sm text-ink-500 dark:text-ink-400 dark:border-ink-700">
           {t('alerts.none')}
         </p>
       ) : (
@@ -74,7 +74,7 @@ export default function AlertsPanel() {
                 <RiskBadge level={a.severity} label={a.severity} />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-ink-800 dark:text-ink-100">{a.message}</p>
-                  <p className="mt-0.5 text-[11px] text-ink-400">
+                  <p className="mt-0.5 text-[11px] text-ink-500 dark:text-ink-400">
                     {timeAgo(a.firedAt)} · {a.trigger}
                   </p>
                 </div>
@@ -83,7 +83,7 @@ export default function AlertsPanel() {
           </ul>
           <button
             onClick={clearAlerts}
-            className="mt-3 text-xs font-medium text-ink-400 hover:text-ink-600 dark:hover:text-ink-200"
+            className="mt-3 text-xs font-medium text-ink-500 dark:text-ink-400 hover:text-ink-600 dark:hover:text-ink-200"
           >
             {t('alerts.clear')}
           </button>

@@ -96,12 +96,15 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-ink-950;
+    /* min-h/min-w 44px keeps every button a valid mobile touch target (WCAG 2.5.5). */
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-ink-950;
   }
 
   .btn-primary {
-    @apply btn text-white shadow-md shadow-brand-600/25 hover:shadow-lg hover:shadow-brand-600/40 active:scale-[0.98];
-    background-image: linear-gradient(135deg, #10b981 0%, #059669 55%, #047857 100%);
+    /* Emerald gradient darkened so white text meets WCAG AA: lightest stop
+       #047857 = 5.48:1, #065f46 = 7.68:1, #064e3b = 9.72:1 against #fff. */
+    @apply btn text-white shadow-md shadow-brand-700/30 hover:shadow-lg hover:shadow-brand-700/50 active:scale-[0.98];
+    background-image: linear-gradient(135deg, #047857 0%, #065f46 55%, #064e3b 100%);
   }
 
   .btn-secondary {
@@ -113,12 +116,14 @@
   }
 
   .btn-premium {
+    /* Indigo→violet→pink darkened one shade so white text meets WCAG AA:
+       #4f46e5 = 6.29:1, #7c3aed = 5.70:1, #db2777 = 4.60:1 against #fff. */
     @apply btn text-white shadow-md shadow-premium-violet/30 hover:shadow-lg hover:shadow-premium-violet/50 active:scale-[0.98];
-    background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
   }
 
   .input {
-    @apply w-full rounded-xl border border-ink-300/80 bg-white/80 px-3.5 py-2.5 text-sm text-ink-900 shadow-sm backdrop-blur transition placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25 dark:border-white/10 dark:bg-white/5 dark:text-ink-100;
+    @apply w-full rounded-xl border border-ink-300/80 bg-white/80 px-3.5 py-2.5 text-sm text-ink-900 shadow-sm backdrop-blur transition placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25 dark:border-white/10 dark:bg-white/5 dark:text-ink-100 dark:placeholder:text-ink-400;
   }
 
   .label {

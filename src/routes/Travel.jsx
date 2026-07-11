@@ -22,7 +22,7 @@ function CityConditions({ label, loc, forecast }) {
   const sev = assessSeverity(forecast);
   return (
     <div className="rounded-xl border border-ink-200 p-4 dark:border-ink-700">
-      <p className="text-xs font-semibold uppercase text-ink-400">{label}</p>
+      <p className="text-xs font-semibold uppercase text-ink-500 dark:text-ink-400">{label}</p>
       <p className="font-bold">{loc.name}</p>
       <div className="mt-1 flex items-center gap-2">
         <span className="text-3xl" aria-hidden="true">

@@ -8,6 +8,8 @@
 // (frontend-first). See `api/groq.js` for an optional serverless proxy that,
 // when deployed, keeps the key server-side.
 
+import { validateVoiceBlob } from './validation.js';
+
 const GROQ_BASE_URL = 'https://api.groq.com/openai/v1';
 
 /** Production models (2026). llama-3.1-8b-instant / llama-3.3-70b were deprecated. */
@@ -53,6 +55,31 @@ function authHeaders(extra = {}) {
 }
 
 /**
+ * Turn a non-OK Groq response into a single, meaningful Error. The upstream
+ * body (truncated) is included so callers surface something actionable.
+ * @param {Response} res
+ * @param {string} label  Human label for the failing operation.
+ * @returns {Promise<Error>}
+ */
+async function toGroqError(res, label) {
+  const errText = await res.text().catch(() => '');
+  return new Error(`${label} (${res.status}). ${errText.slice(0, 200) || res.statusText}`);
+}
+
+/**
+ * POST to a Groq endpoint, throwing a meaningful error on a non-OK status.
+ * @param {string} pathname
+ * @param {RequestInit} init
+ * @param {string} label
+ * @returns {Promise<Response>}
+ */
+async function postGroq(pathname, init, label) {
+  const res = await fetch(endpoint(pathname), { method: 'POST', ...init });
+  if (!res.ok) throw await toGroqError(res, label);
+  return res;
+}
+
+/**
  * Low-level chat completion call.
  * @param {Object} opts
  * @param {string} opts.model
@@ -72,25 +99,24 @@ export async function chatCompletion({
   signal,
 }) {
   assertConfigured();
+  if (!Array.isArray(messages) || messages.length === 0) {
+    throw new Error('chatCompletion requires a non-empty messages array.');
+  }
 
   /** @type {Record<string, unknown>} */
   const body = { model, messages, temperature };
   if (json) body.response_format = { type: 'json_object' };
   if (maxTokens) body.max_tokens = maxTokens;
 
-  const res = await fetch(endpoint('/chat/completions'), {
-    method: 'POST',
-    headers: authHeaders({ 'Content-Type': 'application/json' }),
-    body: JSON.stringify(body),
-    signal,
-  });
-
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    throw new Error(
-      `Groq request failed (${res.status}). ${errText.slice(0, 200) || res.statusText}`
-    );
-  }
+  const res = await postGroq(
+    '/chat/completions',
+    {
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(body),
+      signal,
+    },
+    'Groq request failed'
+  );
 
   const data = await res.json();
   const content = data?.choices?.[0]?.message?.content;
@@ -136,6 +162,8 @@ export function parseJSONResponse(raw) {
  */
 export async function transcribeAudio(audioBlob, { language } = {}) {
   assertConfigured();
+  const check = validateVoiceBlob(audioBlob);
+  if (!check.ok) throw new Error(check.error);
 
   const form = new FormData();
   form.append('file', audioBlob, 'audio.webm');
@@ -143,18 +171,11 @@ export async function transcribeAudio(audioBlob, { language } = {}) {
   form.append('response_format', 'json');
   if (language) form.append('language', language);
 
-  const res = await fetch(endpoint('/audio/transcriptions'), {
-    method: 'POST',
-    headers: authHeaders(), // browser sets multipart boundary automatically
-    body: form,
-  });
-
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    throw new Error(
-      `Transcription failed (${res.status}). ${errText.slice(0, 200) || res.statusText}`
-    );
-  }
+  const res = await postGroq(
+    '/audio/transcriptions',
+    { headers: authHeaders(), body: form }, // browser sets multipart boundary
+    'Transcription failed'
+  );
 
   const data = await res.json();
   return (data?.text || '').trim();

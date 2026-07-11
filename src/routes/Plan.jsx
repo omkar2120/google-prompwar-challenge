@@ -164,7 +164,7 @@ export default function Plan() {
           )}
 
           {cached && !mutation.data && (
-            <p className="text-center text-xs text-ink-400">
+            <p className="text-center text-xs text-ink-500 dark:text-ink-400">
               {t('common.offline')} ({new Date(cached.generatedAt).toLocaleString()})
             </p>
           )}

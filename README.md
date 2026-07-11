@@ -75,10 +75,15 @@ cp .env.example .env
 npm run dev        # http://localhost:5173
 
 # Quality gates
-npm run lint       # ESLint (0 warnings enforced)
-npm test           # Vitest smoke tests
-npm run build      # production build + PWA service worker
+npm run lint          # ESLint (0 warnings enforced)
+npm test              # Vitest — full suite (CI mode)
+npm run test:coverage # Vitest with a V8 coverage report
+npm run build         # production build + PWA service worker
 ```
+
+See **[TESTING.md](./TESTING.md)** for what's covered (threshold boundaries, API
+failure modes, empty/malformed inputs, the empty-AI-alert fallback, onboarding /
+travel / community flows) and how the suite is structured.
 
 ### Environment variables
 
@@ -94,7 +99,7 @@ npm run build      # production build + PWA service worker
 
 ```
 src/
-├── lib/            groqClient · openMeteo · firebase · prompts/ · exportUtils
+├── lib/            groqClient · openMeteo · firebase · prompts/ · exportUtils · validation
 ├── hooks/          useWeather · useGeocode · useGroqChat · usePreparednessPlan ·
 │                   useAlertsEngine · useCommunityReports · useVoiceRecorder …
 ├── store/          appStore.js  (Zustand: profile, language, theme, alerts)
@@ -109,6 +114,41 @@ src/
 - **No fake data:** React Query surfaces genuine loading/error states; on API failure the UI shows a retry, never a silently-substituted value.
 - **Security awareness:** the browser calls Groq directly for the demo (frontend-first, explicitly requested). A 15-line serverless proxy in **`api/groq.js`** keeps the key server-side in production — set `VITE_GROQ_PROXY_URL` to switch to it.
 - **Deterministic + generative split:** thresholds drive severity; the LLM handles reasoning and phrasing.
+
+## Security notes
+
+- **No secrets in source.** All keys are read from `import.meta.env.VITE_*`. `.env`
+  is git-ignored (only `.env.example` with placeholders is tracked) and is never
+  committed.
+- **`VITE_*` vars are bundled into the client by design.** Vite inlines any
+  `VITE_`-prefixed variable into the browser bundle at build time — this is
+  expected, not a leak to hide. The Firebase Web API key and (in the direct-call
+  demo mode) the Groq key are therefore public client identifiers:
+  - Firebase Web API keys are *meant* to be public; access is governed by
+    **Firestore security rules** and Auth, not by key secrecy.
+  - For a fully server-side Groq key in production, deploy `api/groq.js` and set
+    `VITE_GROQ_PROXY_URL` — the client then sends **no** `Authorization` header.
+- **Input validation & size caps.** All user input that flows to an external API
+  is sanitized (control chars stripped) and length/size-capped in one place,
+  `src/lib/validation.js`, and enforced in the underlying lib/hook layer (not just
+  the UI): chat messages, city-search strings, community report notes, and voice
+  recording blobs. This bounds payloads sent to Groq/Open-Meteo/Firestore.
+
+## Assumptions
+
+- **Free, keyless weather.** Open-Meteo is used for all weather + geocoding (no
+  key, generous limits). IMD-aligned rainfall thresholds are treated as the
+  authoritative severity definition.
+- **AI is optional, never fabricated.** Without a Groq key the app still runs:
+  AI surfaces show a clear "add a key" message and the alerts engine falls back
+  to deterministic phrasing. The LLM only *phrases* — it never invents severity.
+- **Firebase is optional.** Without `VITE_FIREBASE_*` the community map runs in a
+  clearly-labeled device-local mode; it never claims local data is shared.
+- **Household-scale, single-device profiles.** Profile/plan/alert history persist
+  in `localStorage` for a household on one device (offline-first PWA); there is no
+  server-side per-user account beyond optional Google sign-in.
+- **Latin-only PDF fonts.** jsPDF core fonts are Latin-only, so PDF export keeps
+  the header in English; the Print and WhatsApp share paths preserve full Unicode.
 
 ## Deploy
 

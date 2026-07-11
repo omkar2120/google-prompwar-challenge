@@ -35,7 +35,11 @@ function UserButton() {
     );
   }
   return (
-    <NavLink to="/profile" aria-label="Profile" className="shrink-0">
+    <NavLink
+      to="/profile"
+      aria-label="Profile"
+      className="flex h-11 w-11 shrink-0 items-center justify-center"
+    >
       {user.photoURL ? (
         <img
           src={user.photoURL}
@@ -58,7 +62,7 @@ function ThemeToggle() {
     <button
       onClick={toggleTheme}
       aria-label="Toggle dark mode"
-      className="btn-ghost h-9 w-9 !p-0 text-lg"
+      className="btn-ghost h-11 w-11 !p-0 text-lg"
     >
       {theme === 'dark' ? '☀️' : '🌙'}
     </button>
@@ -71,12 +75,15 @@ export default function Layout({ children }) {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen lg:flex">
-      {/* Desktop sidebar */}
-      <aside className="glass sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r px-4 py-6 lg:flex">
-        <NavLink to="/" className="mb-9 flex items-center gap-2.5 px-2">
+    <div className="min-h-screen md:flex">
+      {/* Sidebar: icon-rail on tablet (md), full labels on desktop (lg). */}
+      <aside className="glass sticky top-0 hidden h-screen w-20 shrink-0 flex-col border-r px-3 py-6 md:flex lg:w-64 lg:px-4">
+        <NavLink
+          to="/"
+          className="mb-9 flex items-center gap-2.5 px-1 md:justify-center lg:justify-start lg:px-2"
+        >
           <img src="/favicon.svg" alt="" className="h-9 w-9 drop-shadow" />
-          <span className="text-lg font-extrabold tracking-tight">
+          <span className="hidden text-lg font-extrabold tracking-tight lg:inline">
             <span className="gradient-text">{t('app.name')}</span>
           </span>
         </NavLink>
@@ -86,8 +93,9 @@ export default function Layout({ children }) {
               key={item.to}
               to={item.to}
               end={item.exact}
+              title={t(`nav.${item.key}`)}
               className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                `group flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all md:justify-center lg:justify-start ${
                   isActive
                     ? 'bg-brand-gradient text-white shadow-md shadow-brand-600/25'
                     : 'text-ink-600 hover:bg-ink-900/5 dark:text-ink-300 dark:hover:bg-white/5'
@@ -97,14 +105,15 @@ export default function Layout({ children }) {
               <span aria-hidden="true" className="text-base">
                 {item.icon}
               </span>
-              {t(`nav.${item.key}`)}
+              <span className="hidden lg:inline">{t(`nav.${item.key}`)}</span>
             </NavLink>
           ))}
         </nav>
         <NavLink
           to="/profile"
+          title={t('nav.profile')}
           className={({ isActive }) =>
-            `mt-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+            `mt-2 flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all md:justify-center lg:justify-start ${
               isActive
                 ? 'bg-brand-gradient text-white shadow-md shadow-brand-600/25'
                 : 'text-ink-600 hover:bg-ink-900/5 dark:text-ink-300 dark:hover:bg-white/5'
@@ -112,20 +121,20 @@ export default function Layout({ children }) {
           }
         >
           <span aria-hidden="true">👤</span>
-          {t('nav.profile')}
+          <span className="hidden lg:inline">{t('nav.profile')}</span>
         </NavLink>
       </aside>
 
       <div className="flex min-h-screen flex-1 flex-col">
         {/* Header */}
         <header className="glass sticky top-0 z-40 flex items-center justify-between border-b px-4 py-3">
-          <NavLink to="/" className="flex items-center gap-2 lg:hidden">
+          <NavLink to="/" className="flex items-center gap-2 md:hidden">
             <img src="/favicon.svg" alt="" className="h-8 w-8" />
             <span className="font-extrabold">
               <span className="gradient-text">{t('app.name')}</span>
             </span>
           </NavLink>
-          <div className="hidden text-sm font-semibold text-ink-500 lg:block">
+          <div className="hidden text-sm font-semibold text-ink-500 md:block">
             {t(
               `nav.${
                 [...NAV_ITEMS].reverse().find((n) =>
@@ -147,12 +156,12 @@ export default function Layout({ children }) {
           </div>
         )}
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-28 lg:py-8 lg:pb-10">
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-28 md:pb-10 lg:py-8">
           {children}
         </main>
 
-        {/* Mobile bottom nav */}
-        <nav className="glass fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t px-1 py-1.5 lg:hidden">
+        {/* Bottom nav: phones only (tablet+ gets the sidebar rail). */}
+        <nav className="glass fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t px-1 py-1.5 md:hidden">
           {MOBILE_NAV.map((item) => {
             const active = item.exact
               ? location.pathname === item.to

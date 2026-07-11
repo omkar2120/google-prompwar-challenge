@@ -28,7 +28,7 @@ function Counter({ label, value, onChange }) {
         <button
           type="button"
           onClick={() => onChange(Math.max(0, value - 1))}
-          className="h-8 w-8 rounded-full bg-ink-100 text-lg font-bold text-ink-700 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-200"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-ink-100 text-lg font-bold text-ink-700 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-200"
           aria-label={`decrease ${label}`}
         >
           −
@@ -37,7 +37,7 @@ function Counter({ label, value, onChange }) {
         <button
           type="button"
           onClick={() => onChange(value + 1)}
-          className="h-8 w-8 rounded-full bg-brand-100 text-lg font-bold text-brand-700 hover:bg-brand-200 dark:bg-brand-900 dark:text-brand-200"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-lg font-bold text-brand-700 hover:bg-brand-200 dark:bg-brand-900 dark:text-brand-200"
           aria-label={`increase ${label}`}
         >
           +
