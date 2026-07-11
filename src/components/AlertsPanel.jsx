@@ -2,17 +2,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store/appStore.js';
 import { requestNotificationPermission } from '../hooks/useAlertsEngine.js';
+import { formatTimeAgo } from '../lib/datetime.js';
 import RiskBadge from './ui/RiskBadge.jsx';
 import Button from './ui/Button.jsx';
-
-function timeAgo(ts) {
-  const mins = Math.round((Date.now() - ts) / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.round(hrs / 24)}d ago`;
-}
 
 /** Alert history + notification permission control. */
 export default function AlertsPanel() {
@@ -26,7 +18,7 @@ export default function AlertsPanel() {
     typeof Notification !== 'undefined' ? Notification.permission : 'default'
   );
 
-  const enable = async () => {
+  const handleEnableNotifications = async () => {
     const result = await requestNotificationPermission();
     setPermission(result);
     setNotificationsEnabled(result === 'granted');
@@ -48,7 +40,7 @@ export default function AlertsPanel() {
         ) : permission === 'denied' ? (
           <span className="text-xs text-ink-500 dark:text-ink-400">{t('alerts.denied')}</span>
         ) : (
-          <Button variant="secondary" onClick={enable} className="!py-1.5 text-xs">
+          <Button variant="secondary" onClick={handleEnableNotifications} className="!py-1.5 text-xs">
             {t('alerts.enable')}
           </Button>
         )}
@@ -56,7 +48,7 @@ export default function AlertsPanel() {
 
       <p className="mb-3 text-xs text-ink-500 dark:text-ink-400">
         {t('alerts.monitoring')}
-        {lastCheckedAt ? ` · ${timeAgo(lastCheckedAt)}` : ''}
+        {lastCheckedAt ? ` · ${formatTimeAgo(lastCheckedAt)}` : ''}
       </p>
 
       {alertHistory.length === 0 ? (
@@ -75,7 +67,7 @@ export default function AlertsPanel() {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-ink-800 dark:text-ink-100">{a.message}</p>
                   <p className="mt-0.5 text-[11px] text-ink-500 dark:text-ink-400">
-                    {timeAgo(a.firedAt)} · {a.trigger}
+                    {formatTimeAgo(a.firedAt)} · {a.trigger}
                   </p>
                 </div>
               </li>

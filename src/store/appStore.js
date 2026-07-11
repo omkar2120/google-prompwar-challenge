@@ -18,6 +18,7 @@ function loadJSON(key, fallback) {
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
   } catch {
+    // Corrupt/unavailable storage (private mode, quota) — fall back safely.
     return fallback;
   }
 }

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 
 /**
  * Record microphone audio via MediaRecorder and return a Blob to transcribe.
+ * @returns {{isRecording:boolean, error:string|null, start:()=>Promise<void>, stop:()=>Promise<Blob>, supported:boolean}}
  */
 export function useVoiceRecorder() {
   const [isRecording, setIsRecording] = useState(false);

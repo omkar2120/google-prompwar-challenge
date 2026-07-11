@@ -53,8 +53,8 @@ export default function Recovery() {
 
       <div className="card flex flex-wrap items-end gap-4">
         <div className="flex-1">
-          <label className="label">{t('checklist.severity')}</label>
-          <select className="input" value={severity} onChange={(e) => setSeverity(e.target.value)}>
+          <label htmlFor="recovery-severity" className="label">{t('checklist.severity')}</label>
+          <select id="recovery-severity" className="input" value={severity} onChange={(e) => setSeverity(e.target.value)}>
             <option value="light">{t('checklist.light')}</option>
             <option value="heavy">{t('checklist.heavy')}</option>
             <option value="extreme">{t('checklist.extreme')}</option>

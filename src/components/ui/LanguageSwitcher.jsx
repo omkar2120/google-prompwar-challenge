@@ -8,7 +8,7 @@ export default function LanguageSwitcher({ className = '' }) {
   const { i18n } = useTranslation();
   const setLanguage = useAppStore((s) => s.setLanguage);
 
-  const onChange = (e) => {
+  const handleChange = (e) => {
     const lng = e.target.value;
     i18n.changeLanguage(lng);
     setLanguage(lng);
@@ -17,7 +17,7 @@ export default function LanguageSwitcher({ className = '' }) {
   return (
     <select
       value={i18n.language}
-      onChange={onChange}
+      onChange={handleChange}
       aria-label="Select language"
       className={`input max-w-[8.5rem] cursor-pointer py-1.5 text-sm ${className}`}
     >

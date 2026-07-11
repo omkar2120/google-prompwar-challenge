@@ -2,11 +2,11 @@
 // Every AI-generated string in MonsoonMitra flows through here — there are no
 // pre-written "AI" responses anywhere in the codebase.
 //
-// TODO: proxy through a serverless function in production to hide the API key.
-// Calling Groq directly from the browser exposes VITE_GROQ_API_KEY in the
-// client bundle. This is an accepted, explicit tradeoff for the hackathon demo
-// (frontend-first). See `api/groq.js` for an optional serverless proxy that,
-// when deployed, keeps the key server-side.
+// Production note: calling Groq directly from the browser exposes
+// VITE_GROQ_API_KEY in the client bundle. This is an accepted, explicit tradeoff
+// for the frontend-first demo. To keep the key server-side in production, deploy
+// the serverless proxy in `api/groq.js` and set VITE_GROQ_PROXY_URL — this
+// client then omits the Authorization header and routes through the proxy.
 
 import { validateVoiceBlob } from './validation.js';
 

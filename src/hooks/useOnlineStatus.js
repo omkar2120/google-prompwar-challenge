@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
-/** Track online/offline status for the offline-resilience banner. */
+/**
+ * Track online/offline status for the offline-resilience banner.
+ * @returns {boolean} True when the browser reports an active connection.
+ */
 export function useOnlineStatus() {
   const [online, setOnline] = useState(
     typeof navigator === 'undefined' ? true : navigator.onLine

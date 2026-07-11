@@ -22,7 +22,7 @@ export default function Community() {
 
   const [pinned, setPinned] = useState(null);
 
-  const submitReport = async (report) => {
+  const handleSubmitReport = async (report) => {
     await addReport(report);
     logActivity('report', t('activity.report'));
     setPinned(null);
@@ -84,7 +84,7 @@ export default function Community() {
         </div>
         <div className="card">
           <h2 className="mb-3 font-bold">{t('community.reportHazard')}</h2>
-          <ReportForm pinnedLatLng={pinned} onSubmit={submitReport} onUseLocation={setPinned} />
+          <ReportForm pinnedLatLng={pinned} onSubmit={handleSubmitReport} onUseLocation={setPinned} />
         </div>
       </div>
     </div>

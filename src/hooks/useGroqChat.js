@@ -8,6 +8,7 @@ import { validateChatMessage } from '../lib/validation.js';
  * @param {string} opts.systemPrompt
  * @param {string} [opts.model]
  * @param {number} [opts.historyTurns]  How many prior turns to send.
+ * @returns {{messages:import('../types/index.js').ChatMessage[], isSending:boolean, error:string|null, send:(text:string)=>Promise<void>, reset:()=>void}}
  */
 export function useGroqChat({ systemPrompt, model = MODELS.REASONING, historyTurns = 8 }) {
   /** @type {[import('../types/index.js').ChatMessage[], Function]} */
@@ -40,9 +41,9 @@ export function useGroqChat({ systemPrompt, model = MODELS.REASONING, historyTur
         setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
       } catch (err) {
         if (err.name !== 'AbortError') {
+          // Keep the user's message in context and surface the error so they
+          // can retry; ignore AbortError from an intentional reset/cancel.
           setError(err.message || 'Failed to get a response.');
-          // Roll back the optimistic user message context is preserved, but
-          // surface the error so the user can retry.
         }
       } finally {
         setIsSending(false);

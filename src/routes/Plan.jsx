@@ -10,6 +10,31 @@ import RiskBadge from '../components/ui/RiskBadge.jsx';
 import AiTag from '../components/ui/AiTag.jsx';
 import { LoadingSkeleton, LoadingState, ErrorState, EmptyState } from '../components/ui/States.jsx';
 
+/**
+ * Flatten a preparedness plan into id-stable checklist groups for rendering and
+ * progress tracking. Ids are prefixed per group so checkbox state never collides.
+ * @param {import('../types/index.js').PreparednessPlan|null} plan
+ * @returns {{immediate:object[], weekBefore:object[], goBag:object[], allItems:object[]}}
+ */
+function buildPlanSections(plan) {
+  const immediate = (plan?.immediate_actions || []).map((a, i) => ({
+    id: `imm-${i}`,
+    title: a.title,
+    detail: a.detail,
+  }));
+  const weekBefore = (plan?.week_before_actions || []).map((a, i) => ({
+    id: `wk-${i}`,
+    title: a.title,
+    detail: a.detail,
+  }));
+  const goBag = (plan?.go_bag_items || []).map((a, i) => ({
+    id: `bag-${i}`,
+    title: a.item,
+    detail: a.reason,
+  }));
+  return { immediate, weekBefore, goBag, allItems: [...immediate, ...weekBefore, ...goBag] };
+}
+
 export default function Plan() {
   const { t } = useTranslation();
   const profile = useAppStore((s) => s.profile);
@@ -67,24 +92,7 @@ export default function Plan() {
     );
   }
 
-  // Build grouped, id-stable items for the checklist.
-  const immediate = (plan?.immediate_actions || []).map((a, i) => ({
-    id: `imm-${i}`,
-    title: a.title,
-    detail: a.detail,
-  }));
-  const weekBefore = (plan?.week_before_actions || []).map((a, i) => ({
-    id: `wk-${i}`,
-    title: a.title,
-    detail: a.detail,
-  }));
-  const goBag = (plan?.go_bag_items || []).map((a, i) => ({
-    id: `bag-${i}`,
-    title: a.item,
-    detail: a.reason,
-  }));
-
-  const allItems = [...immediate, ...weekBefore, ...goBag];
+  const { immediate, weekBefore, goBag, allItems } = buildPlanSections(plan);
   const doneCount = allItems.filter((it) => planChecks[it.id]).length;
 
   return (

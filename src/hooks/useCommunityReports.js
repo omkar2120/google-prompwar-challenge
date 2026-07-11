@@ -20,6 +20,7 @@ function loadLocal() {
     const raw = localStorage.getItem(LOCAL_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
+    // Corrupt/unavailable storage — treat as "no local reports".
     return [];
   }
 }

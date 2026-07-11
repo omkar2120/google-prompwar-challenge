@@ -8,6 +8,7 @@ import { isRecent } from '../components/map/hazardMeta.js';
  * report data, regenerated when the recent-report set changes.
  * @param {import('../types/index.js').HazardReport[]} reports
  * @param {string} language
+ * @returns {import('@tanstack/react-query').UseQueryResult<string>}
  */
 export function useCommunitySummary(reports, language) {
   const recent = (reports || []).filter((r) => isRecent(r.createdAt));

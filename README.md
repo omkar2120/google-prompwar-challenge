@@ -97,6 +97,9 @@ travel / community flows) and how the suite is structured.
 
 ## Architecture notes
 
+For a fuller walkthrough of the module layout and data flow, see
+**[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)**.
+
 ```
 src/
 ├── lib/            groqClient · openMeteo · firebase · prompts/ · exportUtils · validation

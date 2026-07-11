@@ -18,6 +18,7 @@ function initialLanguage() {
     const raw = localStorage.getItem('monsoonmitra_store');
     return raw ? JSON.parse(raw)?.state?.language || 'en' : 'en';
   } catch {
+    // Storage blocked/corrupt — default to English.
     return 'en';
   }
 }

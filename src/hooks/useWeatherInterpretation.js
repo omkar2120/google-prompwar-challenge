@@ -10,6 +10,7 @@ import { assessSeverity } from '../lib/openMeteo.js';
  * @param {import('../types/index.js').ForecastData|null} forecast
  * @param {import('../types/index.js').HouseholdProfile|null} profile
  * @param {string} language
+ * @returns {import('@tanstack/react-query').UseQueryResult<string>}
  */
 export function useWeatherInterpretation(forecast, profile, language) {
   const daily = forecast?.daily;

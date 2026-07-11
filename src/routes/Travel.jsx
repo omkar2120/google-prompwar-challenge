@@ -46,6 +46,38 @@ CityConditions.propTypes = {
   forecast: PropTypes.object,
 };
 
+/**
+ * Condense a raw forecast into the compact shape the advisory prompt expects
+ * (severity label + today's headline metrics), so we never ship raw arrays.
+ * @param {import('../types/index.js').ForecastData} forecast
+ * @param {import('../types/index.js').GeoLocation} location
+ */
+function summarizeCityForecast(forecast, location) {
+  return {
+    location: location.name,
+    severity: assessSeverity({ ...forecast, location }).label,
+    today: {
+      rain_sum_mm: forecast.daily.precipitation_sum?.[0],
+      rain_probability_max: forecast.daily.precipitation_probability_max?.[0],
+      wind_max_kmh: forecast.daily.windspeed_10m_max?.[0],
+    },
+    current: forecast.current,
+  };
+}
+
+/**
+ * Validate the travel-advisory inputs, returning a user-facing error string, or
+ * null when the request is good to send.
+ * @param {{groqReady:boolean, origin:object|null, destination:object|null, t:Function}} args
+ * @returns {string|null}
+ */
+function getTravelValidationError({ groqReady, origin, destination, t }) {
+  if (!groqReady) return t('errors.noGroqKey');
+  if (!origin) return t('travel.needOrigin');
+  if (!destination) return t('travel.needDestination');
+  return null;
+}
+
 export default function Travel() {
   const { t } = useTranslation();
   const language = useAppStore((s) => s.language);
@@ -64,16 +96,6 @@ export default function Travel() {
         fetchForecast(origin.latitude, origin.longitude),
         fetchForecast(destination.latitude, destination.longitude),
       ]);
-      const summarize = (fc, loc) => ({
-        location: loc.name,
-        severity: assessSeverity({ ...fc, location: loc }).label,
-        today: {
-          rain_sum_mm: fc.daily.precipitation_sum?.[0],
-          rain_probability_max: fc.daily.precipitation_probability_max?.[0],
-          wind_max_kmh: fc.daily.windspeed_10m_max?.[0],
-        },
-        current: fc.current,
-      });
       const advisory = await chatCompletionJSON({
         model: MODELS.REASONING,
         temperature: 0.4,
@@ -82,8 +104,8 @@ export default function Travel() {
           {
             role: 'user',
             content: JSON.stringify({
-              origin_weather: summarize(originFc, origin),
-              destination_weather: summarize(destFc, destination),
+              origin_weather: summarizeCityForecast(originFc, origin),
+              destination_weather: summarizeCityForecast(destFc, destination),
               travel_mode: mode,
               travel_time: when || 'not specified',
             }),
@@ -97,30 +119,24 @@ export default function Travel() {
 
   // Keep the button always clickable and validate on submit so the user gets
   // clear, inline feedback instead of a silently-disabled button no-op.
-  const pickOrigin = (loc) => {
+  const handleOriginChange = (loc) => {
     setOrigin(loc);
     setValidationError(null);
   };
-  const pickDestination = (loc) => {
+  const handleDestinationChange = (loc) => {
     setDestination(loc);
     setValidationError(null);
   };
 
   const handleSubmit = () => {
-    if (!isGroqConfigured()) {
-      setValidationError(t('errors.noGroqKey'));
-      return;
-    }
-    if (!origin) {
-      setValidationError(t('travel.needOrigin'));
-      return;
-    }
-    if (!destination) {
-      setValidationError(t('travel.needDestination'));
-      return;
-    }
-    setValidationError(null);
-    mutation.mutate();
+    const error = getTravelValidationError({
+      groqReady: isGroqConfigured(),
+      origin,
+      destination,
+      t,
+    });
+    setValidationError(error);
+    if (!error) mutation.mutate();
   };
 
   const result = mutation.data;
@@ -133,17 +149,18 @@ export default function Travel() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label">{t('travel.origin')}</label>
-            <LocationPicker value={origin} onChange={pickOrigin} showDetect />
+            <LocationPicker value={origin} onChange={handleOriginChange} showDetect />
           </div>
           <div>
             <label className="label">{t('travel.destination')}</label>
-            <LocationPicker value={destination} onChange={pickDestination} showDetect={false} />
+            <LocationPicker value={destination} onChange={handleDestinationChange} showDetect={false} />
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label">{t('travel.when')}</label>
+            <label htmlFor="travel-when" className="label">{t('travel.when')}</label>
             <input
+              id="travel-when"
               type="datetime-local"
               className="input"
               value={when}
@@ -151,8 +168,8 @@ export default function Travel() {
             />
           </div>
           <div>
-            <label className="label">{t('travel.mode')}</label>
-            <select className="input" value={mode} onChange={(e) => setMode(e.target.value)}>
+            <label htmlFor="travel-mode" className="label">{t('travel.mode')}</label>
+            <select id="travel-mode" className="input" value={mode} onChange={(e) => setMode(e.target.value)}>
               <option value="car">{t('travel.car')}</option>
               <option value="bike">{t('travel.bike')}</option>
               <option value="transit">{t('travel.transit')}</option>

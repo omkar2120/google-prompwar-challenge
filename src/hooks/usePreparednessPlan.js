@@ -31,6 +31,7 @@ function summarizeForecast(forecast) {
  * Caches the last result to localStorage for offline viewing (PWA requirement),
  * but the hook always re-calls the API on `mutate` — no silent cache reuse.
  * @param {string} language
+ * @returns {import('@tanstack/react-query').UseMutationResult<import('../types/index.js').PreparednessPlan>}
  */
 export function usePreparednessPlan(language) {
   const mutation = useMutation({

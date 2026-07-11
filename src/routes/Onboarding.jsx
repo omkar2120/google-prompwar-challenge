@@ -149,8 +149,9 @@ export default function Onboarding() {
           <>
             <h2 className="font-bold">{t('onboarding.homeTitle')}</h2>
             <div>
-              <label className="label">{t('onboarding.homeType')}</label>
+              <label htmlFor="onboarding-hometype" className="label">{t('onboarding.homeType')}</label>
               <select
+                id="onboarding-hometype"
                 className="input"
                 value={data.homeType}
                 onChange={(e) => patch({ homeType: e.target.value })}
@@ -163,8 +164,9 @@ export default function Onboarding() {
             </div>
             {data.homeType === 'apartment' && (
               <div>
-                <label className="label">{t('onboarding.floorNumber')}</label>
+                <label htmlFor="onboarding-floor" className="label">{t('onboarding.floorNumber')}</label>
                 <input
+                  id="onboarding-floor"
                   type="number"
                   min="0"
                   className="input"
@@ -216,8 +218,9 @@ export default function Onboarding() {
               onChange={(v) => patch({ medical: { ...data.medical, mobilityAids: v } })}
             />
             <div>
-              <label className="label">{t('onboarding.medicalNotes')}</label>
+              <label htmlFor="onboarding-medical-notes" className="label">{t('onboarding.medicalNotes')}</label>
               <textarea
+                id="onboarding-medical-notes"
                 className="input min-h-[90px]"
                 value={data.medical.notes}
                 onChange={(e) => patch({ medical: { ...data.medical, notes: e.target.value } })}

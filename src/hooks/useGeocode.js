@@ -4,6 +4,7 @@ import { geocodeCity } from '../lib/openMeteo.js';
 /**
  * Debounced-ish city search via React Query (keyed by term).
  * @param {string} term
+ * @returns {import('@tanstack/react-query').UseQueryResult<import('../types/index.js').GeoLocation[]>}
  */
 export function useGeocode(term) {
   const trimmed = (term || '').trim();

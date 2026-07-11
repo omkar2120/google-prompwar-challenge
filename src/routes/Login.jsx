@@ -42,12 +42,12 @@ export default function Login() {
     if (user) navigate(redirectTo, { replace: true });
   }, [user, navigate, redirectTo]);
 
-  const google = async () => {
+  const handleGoogleSignIn = async () => {
     const ok = await signInWithGoogle();
     if (ok) logActivity('login', t('activity.login'));
   };
 
-  const guest = () => {
+  const handleGuestSignIn = () => {
     continueAsGuest();
     logActivity('login', t('activity.login'));
   };
@@ -65,7 +65,7 @@ export default function Login() {
 
         <div className="mt-8 space-y-3">
           <button
-            onClick={google}
+            onClick={handleGoogleSignIn}
             className="btn-secondary w-full py-3 text-base"
           >
             <GoogleIcon />
@@ -78,7 +78,7 @@ export default function Login() {
             <span className="h-px flex-1 bg-ink-200 dark:bg-white/10" />
           </div>
 
-          <Button variant="premium" onClick={guest} className="w-full py-3 text-base">
+          <Button variant="premium" onClick={handleGuestSignIn} className="w-full py-3 text-base">
             {t('auth.guest')}
           </Button>
           <p className="text-xs text-ink-500 dark:text-ink-400">{t('auth.guestHint')}</p>

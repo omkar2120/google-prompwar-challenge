@@ -4,17 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth.js';
 import { useAppStore } from '../store/appStore.js';
 import { SUPPORTED_LANGUAGES } from '../i18n/index.js';
+import { formatTimeAgo } from '../lib/datetime.js';
 import Button from '../components/ui/Button.jsx';
 import { EmptyState } from '../components/ui/States.jsx';
-
-function timeAgo(ts) {
-  const mins = Math.round((Date.now() - ts) / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.round(hrs / 24)}d ago`;
-}
 
 const ACTIVITY_ICONS = {
   plan: '📋',
@@ -65,7 +57,7 @@ export default function Profile() {
     );
   }
 
-  const doSignOut = async () => {
+  const handleSignOut = async () => {
     await signOut();
     navigate('/login', { replace: true });
   };
@@ -105,7 +97,7 @@ export default function Profile() {
             {user.provider === 'google' ? 'Google' : t('auth.guestMode')}
           </span>
         </div>
-        <Button variant="secondary" onClick={doSignOut}>
+        <Button variant="secondary" onClick={handleSignOut}>
           {t('auth.signOut')}
         </Button>
       </div>
@@ -200,7 +192,7 @@ export default function Profile() {
                 <span className="flex-1 text-sm font-medium">
                   {a.label || t(`activity.${a.type}`)}
                 </span>
-                <span className="text-xs text-ink-500 dark:text-ink-400">{timeAgo(a.at)}</span>
+                <span className="text-xs text-ink-500 dark:text-ink-400">{formatTimeAgo(a.at)}</span>
               </li>
             ))}
           </ul>

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import { useTranslation } from 'react-i18next';
 import { buildIcon, HAZARD_META } from './hazardMeta.js';
+import { formatTimeAgoShort } from '../../lib/datetime.js';
 
 function ClickHandler({ onPick }) {
   useMapEvents({
@@ -12,13 +13,6 @@ function ClickHandler({ onPick }) {
   return null;
 }
 ClickHandler.propTypes = { onPick: PropTypes.func.isRequired };
-
-function timeAgo(ts) {
-  const mins = Math.round((Date.now() - ts) / 60000);
-  if (mins < 60) return `${Math.max(1, mins)}m`;
-  const hrs = Math.round(mins / 60);
-  return hrs < 24 ? `${hrs}h` : `${Math.round(hrs / 24)}d`;
-}
 
 /**
  * Leaflet map with color-coded, recency-faded hazard markers.
@@ -61,8 +55,10 @@ export default function HazardMap({ reports, center, pinned, onPick }) {
                 {HAZARD_META[r.type]?.emoji} {t(`community.${r.type}`)}
               </div>
               {r.note && <p className="text-sm">{r.note}</p>}
-              {r.photo && <img src={r.photo} alt="" className="max-h-24 rounded" />}
-              <p className="text-xs text-gray-500">{t('community.reportedAgo', { time: timeAgo(r.createdAt) })}</p>
+              {r.photo && (
+                <img src={r.photo} alt={t(`community.${r.type}`)} className="max-h-24 rounded" />
+              )}
+              <p className="text-xs text-gray-500">{t('community.reportedAgo', { time: formatTimeAgoShort(r.createdAt) })}</p>
             </div>
           </Popup>
         </Marker>

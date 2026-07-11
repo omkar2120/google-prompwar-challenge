@@ -6,6 +6,7 @@ import { fetchForecast } from '../lib/openMeteo.js';
  * cache states for free — no fake data ever substituted.
  * @param {import('../types/index.js').GeoLocation|null|undefined} location
  * @param {{enabled?: boolean}} [opts]
+ * @returns {import('@tanstack/react-query').UseQueryResult<import('../types/index.js').ForecastData>}
  */
 export function useWeather(location, opts = {}) {
   const enabled = Boolean(location?.latitude != null && location?.longitude != null) && opts.enabled !== false;

@@ -48,7 +48,7 @@ export default function Checklist() {
   });
 
   const data = mutation.data;
-  const toggle = (id, checked) => setChecks((c) => ({ ...c, [id]: checked }));
+  const handleToggle = (id, checked) => setChecks((c) => ({ ...c, [id]: checked }));
 
   const sections = data
     ? CATEGORIES.filter((c) => data[c]?.length).map((c) => ({
@@ -68,8 +68,9 @@ export default function Checklist() {
 
       <div className="card grid gap-4 sm:grid-cols-3">
         <div>
-          <label className="label">{t('checklist.householdSize')}</label>
+          <label htmlFor="checklist-size" className="label">{t('checklist.householdSize')}</label>
           <input
+            id="checklist-size"
             type="number"
             min="1"
             className="input"
@@ -78,8 +79,9 @@ export default function Checklist() {
           />
         </div>
         <div>
-          <label className="label">{t('checklist.region')}</label>
+          <label htmlFor="checklist-region" className="label">{t('checklist.region')}</label>
           <input
+            id="checklist-region"
             className="input"
             value={region}
             onChange={(e) => setRegion(e.target.value)}
@@ -87,8 +89,8 @@ export default function Checklist() {
           />
         </div>
         <div>
-          <label className="label">{t('checklist.severity')}</label>
-          <select className="input" value={severity} onChange={(e) => setSeverity(e.target.value)}>
+          <label htmlFor="checklist-severity" className="label">{t('checklist.severity')}</label>
+          <select id="checklist-severity" className="input" value={severity} onChange={(e) => setSeverity(e.target.value)}>
             <option value="light">{t('checklist.light')}</option>
             <option value="heavy">{t('checklist.heavy')}</option>
             <option value="extreme">{t('checklist.extreme')}</option>
@@ -139,7 +141,7 @@ export default function Checklist() {
                 title={t(`checklist.${c}`)}
                 items={data[c].map((item, i) => ({ id: `${c}-${i}`, title: item }))}
                 checks={checks}
-                onToggle={toggle}
+                onToggle={handleToggle}
               />
             ) : null
           )}
