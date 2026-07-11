@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.1",
-    "firebase": "^10.12.4",
+    "firebase": "^12.16.0",
     "i18next": "^23.12.2",
     "jspdf": "^2.5.1",
     "leaflet": "^1.9.4",
